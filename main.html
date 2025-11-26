@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -53,3 +54,60 @@
 <script src="./app.js"></script>
 </body>
 </html>
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Chart</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+
+    <header class="top-bar">
+        <div class="logo">📈 StockChart</div>
+
+        <div class="symbol-input">
+            <input type="text" id="symbolField" placeholder="AAPL, TSLA, BTCUSD...">
+            <button id="loadBtn">Load</button>
+        </div>
+
+        <div class="timeframes">
+            <button data-tf="1D">1D</button>
+            <button data-tf="5D">5D</button>
+            <button data-tf="1M">1M</button>
+            <button data-tf="6M">6M</button>
+            <button data-tf="1Y">1Y</button>
+            <button data-tf="5Y">5Y</button>
+        </div>
+    </header>
+
+    <main class="chart-layout">
+
+        <aside class="tools">
+            <h3>Tools</h3>
+            <button data-tool="crosshair">Crosshair</button>
+            <button data-tool="trendline">Trendline</button>
+            <button data-tool="ray">Ray</button>
+            <button data-tool="horizontal">Horizontal Line</button>
+            <button data-tool="fib">Fibonacci</button>
+        </aside>
+
+        <section class="chart-area">
+            <canvas id="chartCanvas"></canvas>
+        </section>
+
+        <aside class="indicators">
+            <h3>Indicators</h3>
+            <label><input type="checkbox" data-ind="sma"> SMA</label>
+            <label><input type="checkbox" data-ind="ema"> EMA</label>
+            <label><input type="checkbox" data-ind="rsi"> RSI</label>
+            <label><input type="checkbox" data-ind="macd"> MACD</label>
+        </aside>
+
+    </main>
+<script src="./app.js"></script>
+</body>
+</html>
+>>>>>>> 713d8d82ea3b35afca3b745526ea474f6d845d80
