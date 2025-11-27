@@ -1,171 +1,99 @@
+import Chart from "./Chart/Chart.js";
+import Timeframe from "./Chart/Timeframe.js";
+
 const canvas = document.getElementById("chartCanvas");
-const symbolField = document.getElementById("symbolField");
+const tickerInput = document.getElementById("tickerInput");
+const loadTickerBtn = document.getElementById("loadTicker");
+const tfButtons = document.querySelectorAll(".timeframes button");
 
-const timeframeButtons = document.querySelectorAll(".timeframes button");
-const toolIndicators = document.querySelectorAll(".tools button");
+const chart = new Chart(canvas);
+const timeframe = new Timeframe();
 
-const indicatorCheckboxes = document.querySelectorAll(".indicators input[type='checkbox']");
+let fullData = [];
+let currentTF = "1d";
 
-const ctx = canvas.getContext("2d");
-
-const chartState = {
-    symbol: "AAPL",
-    timeframe: "1D",
-    data: [],
-    indicators: {
-        sma: false,
-        ema: false,
-        rsi: false,
-        macd: false
-    },
-    activeTool: null,
-    drawings: []
+const backendTFMap = {
+    "1m": "1m",
+    "5m": "5m",
+    "15m": "15m",
+    "1h": "1h",
+    "1d": "1d",
+    "1w": "1w",
+    "1mo": "1mo",
+    "5D": "1d",
+    "1M": "1d",
+    "6M": "1d",
+    "1Y": "1w",
+    "5Y": "1mo",
+    "ALL": "1mo"
 };
 
-function resizeCanvas() {
-    const parent = canvas.parentElement;
-    const rect = parent.getBoundingClientRect();
+async function loadFromNode(ticker, tf) {
+    const backendTF = backendTFMap[tf] || "1d";
+    const url = `http://localhost:3000/api/stock?ticker=${ticker}&interval=${backendTF}`;
+    console.log("FETCH:", url);
 
-    const dpr = window.devicePixelRatio || 1;
-
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
-
-    canvas.style.width = rect.width + "px";
-    canvas.style.height = rect.height + "px";
-
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.scale(dpr, dpr);
-}
-
-window.addEventListener("resize", () => {
-    resizeCanvas();
-    drawChart();
-});
-
-resizeCanvas();
-
-function drawChart() {
-    const parent = canvas.parentElement;
-    const rect = parent.getBoundingClientRect();
-
-    ctx.clearRect(0, 0, rect.width, rect.height);
-
-    drawGrid(rect.width, rect.height);
-}
-
-function drawGrid(width, height) {
-    ctx.strokeStyle = "#333";
-    ctx.lineWidth = 1;
-
-    const spacing = 50;
-
-    for (let x = 0; x < width; x += spacing) {
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, height);
-        ctx.stroke();
-    }
-
-    for (let y = 0; y < height; y += spacing) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(width, y);
-        ctx.stroke();
-    }
-}
-
-drawChart();
-
-document.getElementById("loadBtn").addEventListener("click", () => {
-    const value = symbolField.value.trim().toUpperCase();
-    if (value) {
-        chartState.symbol = value;
-        fetchData();
-    }
-});
-
-timeframeButtons.forEach(btn => {
-    btn.addEventListener("click", () => {
-        chartState.timeframe = btn.dataset.tf;
-
-        timeframeButtons.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-
-        fetchData();
-    });
-});
-
-toolIndicators.forEach(btn => {
-    btn.addEventListener("click", () => {
-        chartState.activeTool = btn.dataset.tool;
-
-        toolIndicators.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-    });
-});
-
-indicatorCheckboxes.forEach(checkbox => {
-    checkbox.addEventListener("change", () => {
-        const ind = checkbox.dataset.ind;
-        chartState.indicators[ind] = checkbox.checked;
-    });
-});
-
-const timeframeMap = {
-    "1D": "1d",
-    "5D": "5d",
-    "1M": "1mo",
-    "6M": "6mo",
-    "1Y": "1y",
-    "5Y": "5y"
-};
-
-async function fetchData() {
     try {
-        const symbol = chartState.symbol;
-        const range = timeframeMap[chartState.timeframe];
-        const interval = "1d";
+        const res = await fetch(url);
+        const json = await res.json();
 
-        const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=${interval}&range=${range}`;
-
-        const response = await fetch(url);
-        const json = await response.json();
-
-        if (!json.chart || !json.chart.result) {
-            console.error("Bad API response", json);
-            return;
+        if (!Array.isArray(json)) {
+            console.warn("BACKEND ERROR:", json);
+            alert(json.error || "Failed to load stock data.");
+            return [];
         }
 
-        const result = json.chart.result[0];
-        const timestamps = result.timestamp;
-        const quote = result.indicators.quote[0];
-
-        const open = quote.open;
-        const high = quote.high;
-        const low = quote.low;
-        const close = quote.close;
-        const volume = quote.volume;
-
-        chartState.data = [];
-
-        for (let i = 0; i < timestamps.length; i++) {
-            chartState.data.push({
-                time: new Date(timestamps[i] * 1000),
-                open: open[i],
-                high: high[i],
-                low: low[i],
-                close: close[i],
-                volume: volume[i]
-            });
-        }
-
-        console.log("Candles loaded:", chartState.data);
-
-        drawChart();
-
+        return json.map(r => ({
+            time: new Date(r.time),
+            open: r.open,
+            high: r.high,
+            low: r.low,
+            close: r.close,
+            volume: r.volume
+        }));
     } catch (err) {
-        console.error("Fetch error:", err);
+        console.error("FRONTEND FETCH ERROR:", err);
+        alert("Cannot reach backend. Is server running?");
+        return [];
     }
 }
-///
+
+function updateChart() {
+    if (!fullData.length) {
+        chart.setData([], [], currentTF);
+        return;
+    }
+
+    const filtered = timeframe.apply(fullData, currentTF);
+    chart.setData(fullData, filtered, currentTF);
+}
+
+loadTickerBtn.addEventListener("click", async () => {
+    const symbol = tickerInput.value.trim().toUpperCase();
+    if (!symbol) return;
+
+    fullData = await loadFromNode(symbol, currentTF);
+    tfButtons.forEach(b => b.classList.remove("active"));
+    updateChart();
+});
+
+tickerInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") loadTickerBtn.click();
+});
+
+tfButtons.forEach(btn => {
+    btn.addEventListener("click", async () => {
+        const symbol = tickerInput.value.trim().toUpperCase();
+        if (!symbol) return;
+
+        tfButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        currentTF = btn.dataset.tf;
+
+        fullData = await loadFromNode(symbol, currentTF);
+        updateChart();
+    });
+});
+
+updateChart();

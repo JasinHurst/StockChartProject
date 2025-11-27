@@ -9,21 +9,39 @@
 <body>
 
     <header class="top-bar">
-        <div class="logo">📈 StockChart</div>
+        <div class="logo">StockChart</div>
 
         <div class="symbol-input">
-            <input type="text" id="symbolField" placeholder="AAPL, TSLA, BTCUSD...">
-            <button id="loadBtn">Load</button>
+            <label for="fileInput">Load CSV:&nbsp;</label>
+            <input type="file" id="fileInput" accept=".csv">
         </div>
 
-        <div class="timeframes">
-            <button data-tf="1D">1D</button>
-            <button data-tf="5D">5D</button>
-            <button data-tf="1M">1M</button>
-            <button data-tf="6M">6M</button>
-            <button data-tf="1Y">1Y</button>
-            <button data-tf="5Y">5Y</button>
+        <div class="symbol-input">
+            <input id="tickerInput" type="text" placeholder="Enter Ticker (AAPL)">
+            <button id="loadTicker">Load</button>
         </div>
+
+     <div class="timeframes">
+
+        <button data-tf="1m"     data-type="backend">1m</button>
+        <button data-tf="5m"     data-type="backend">5m</button>
+        <button data-tf="15m"    data-type="backend">15m</button>
+        <button data-tf="1h"     data-type="backend">1H</button>
+
+        <button data-tf="1d"     data-type="backend">1D</button>
+        <button data-tf="1w"     data-type="backend">1W</button>
+        <button data-tf="1mo"    data-type="backend">1M</button>
+
+        <button data-tf="5D"     data-type="range">5D</button>
+        <button data-tf="1M"     data-type="range">1M R</button>
+        <button data-tf="6M"     data-type="range">6M</button>
+        <button data-tf="1Y"     data-type="range">1Y</button>
+        <button data-tf="5Y"     data-type="range">5Y</button>
+        <button data-tf="ALL"    data-type="range">ALL</button>
+
+</div>
+
+
     </header>
 
     <main class="chart-layout">
@@ -50,6 +68,7 @@
         </aside>
 
     </main>
-<script src="./app.js"></script>
+
+    <script type="module" src="./app.js"></script>
 </body>
 </html>

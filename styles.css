@@ -10,7 +10,6 @@ body {
     color: #fbf2f2;
 }
 
-/* ----- HEADER ----- */
 .top-bar {
     background: #2a2a2a;
     padding: 12px 20px;
@@ -26,30 +25,33 @@ body {
     color: #ff6600;
 }
 
-.symbol-input input {
-    padding: 5px 10px;
-    width: 150px;
+.symbol-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
-.symbol-input button {
-    padding: 6px 12px;
-    background: #ff6600;
-    border: none;
-    cursor: pointer;
-    color: #1f1f1f;
-    font-weight: bold;
+
+.symbol-input input[type="file"] {
+    color: #fbf2f2;
+    font-size: 12px;
 }
 
 .timeframes button {
-    padding: 6px 12px;
-    margin-left: 5px;
-    background: #333;
+    padding: 6px 10px;
     border: none;
-    color: #fbf2f2;
+    background: #333;
+    color: #eee;
+    border-radius: 4px;
     cursor: pointer;
 }
 .timeframes button:hover {
     background: rgb(12, 228, 117);
     color: #1f1f1f;
+}
+.timeframes button.active {
+    background: #ff6600;
+    color: #000;
+    font-weight: bold;
 }
 
 .tools,
@@ -91,15 +93,14 @@ body {
     background: #1f1f1f;
     border-style: ridge;
     height: 900px;
-    
 }
 
 .chart-layout {
     display: grid;
     grid-template-columns: 120px 1fr 120px;
     grid-auto-rows: 1fr;
-    max-width: 1800px;   
-    margin: 0 auto; 
+    max-width: 1800px;
+    margin: 0 auto;
 }
 
 #chartCanvas {

@@ -1,2 +1,3 @@
 This project is a custom JavaScript stock charting tool I'm building from scratch to experiment with canvas rendering, chart utilities, and interactive tools. The app handles dynamic resizing with proper DPR scaling, draws a grid layout, and manages chart state for symbols, timeframes, and technical indicators like SMA, EMA, RSI, and MACD. Everything is built manually using HTML, CSS, and vanilla JS—no charting libraries—so I can fully control how the chart behaves and looks. Over time I’ll be adding real data fetches, candlesticks, overlays, drawing tools, and more. This repo is a work in progress and serves as a sandbox for learning, experimenting, and building a lightweight charting engine from the ground up.
 ![Screenshot of StockChart](PersonalCalculator.png)
+
