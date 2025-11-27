@@ -52,6 +52,7 @@ export default class Chart {
         this.grid.draw(rect.width, rect.height);
         const { min, max } = this.candles.draw(rect.width, rect.height, this.data);
         this.priceScale.draw(rect.width, rect.height, min, max);
-        this.dateScale.draw(rect.width, rect.height, this.data);
+        this.dateScale.draw(rect.width, rect.height, this.data, this.timeframe);
+
     }
 }
